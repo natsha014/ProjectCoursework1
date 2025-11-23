@@ -93,7 +93,7 @@ def get_filter_date_df(operations: Optional[DataFrame], date: str) -> DataFrame 
     date_start = datetime.strptime(date, "%Y-%m-%d %H:%M:%S").strftime("%Y-%m-1 00:00:00")
     operations["Дата операции"] = pd.to_datetime(operations["Дата операции"], dayfirst=True)
     filter_df = operations[operations["Дата операции"].between(date_start, date)]
-    logger_filter_date.info("Data received by date")
+    logger_filter_date.info(f"Data received from {date_start} to {date} {len(filter_df)} records found")
     return filter_df
 
 
