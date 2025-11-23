@@ -8,6 +8,7 @@ from src.utils import get_stock
 from src.utils import get_time_greeting
 from src.utils import get_top
 from src.utils import load_json
+from src.utils import read_exel
 
 
 def str_main(date: str) -> str:
@@ -25,7 +26,8 @@ def str_main(date: str) -> str:
     path_j = str(config.PATH_TO_USER_SETTINGS)
 
     greeting = get_time_greeting()
-    df_filter_date = get_filter_date_df(path_xl, date)
+    operations = read_exel(path_xl)
+    df_filter_date = get_filter_date_df(operations, date)
     cards = get_cards(df_filter_date)
     top_transactions = get_top(df_filter_date)
     user_settings = load_json(path_j)

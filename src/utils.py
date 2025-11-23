@@ -26,6 +26,7 @@ logging.basicConfig(
 )
 
 logger_greeting = logging.getLogger("greeting")
+logger_excel = logging.getLogger("excel")
 logger_filter_date = logging.getLogger("filter_date")
 logger_cards = logging.getLogger("cards")
 logger_top = logging.getLogger("top")
@@ -62,24 +63,38 @@ def get_time_greeting() -> str:
         return ""
 
 
-def get_filter_date_df(path_xlsx: str, date: str) -> DataFrame | None:
+def read_exel(path_xlsx: str) -> DataFrame | None:
     """
-    Функция принимает путь к файлу, входящую дату и возвращает данные с начала месяца,
+    Чтение Exel файла
+    """
+    logger_excel.info("Run function")
+
+    if not os.path.exists(path_xlsx) or os.path.getsize(path_xlsx) == 0:
+        logger_excel.error("Path_xlsx does not exist or is empty")
+        return None
+    else:
+        df = pd.read_excel(path_xlsx)
+        logger_excel.info("Data received")
+
+    return df
+
+
+def get_filter_date_df(operations: Optional[DataFrame], date: str) -> DataFrame | None:
+    """
+    Функция принимает файл, входящую дату и возвращает данные с начала месяца,
     на который выпадает входящая дата, по входящую дату
     """
     logger_filter_date.info("Run function")
 
-    if not os.path.exists(path_xlsx) or os.path.getsize(path_xlsx) == 0:
-        logger_filter_date.error("Path_xlsx does not exist or is empty")
+    if operations is None:
+        logger_filter_date.error("operations is None")
         return None
-    else:
-        df = pd.read_excel(path_xlsx)
-        logger_filter_date.info("Data received")
-        date_start = datetime.strptime(date, "%Y-%m-%d %H:%M:%S").strftime("%Y-%m-1 00:00:00")
-        df["Дата операции"] = pd.to_datetime(df["Дата операции"], dayfirst=True)
-        filter_df = df[df["Дата операции"].between(date_start, date)]
-        logger_filter_date.info("Data received by date")
-        return filter_df
+
+    date_start = datetime.strptime(date, "%Y-%m-%d %H:%M:%S").strftime("%Y-%m-1 00:00:00")
+    operations["Дата операции"] = pd.to_datetime(operations["Дата операции"], dayfirst=True)
+    filter_df = operations[operations["Дата операции"].between(date_start, date)]
+    logger_filter_date.info("Data received by date")
+    return filter_df
 
 
 def get_cards(df_filter_date: Optional[DataFrame]) -> list[dict] | None:
