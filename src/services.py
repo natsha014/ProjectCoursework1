@@ -3,14 +3,12 @@ import logging
 from typing import Optional
 
 import pandas as pd
-from dotenv import load_dotenv
 from pandas import DataFrame
 
 import config
 from src.utils import read_exel
 
 pd.options.mode.copy_on_write = True
-load_dotenv()
 
 logger_cash = logging.getLogger("cash")
 
@@ -22,7 +20,7 @@ def get_cash_month(operations: Optional[DataFrame], year: int, month: int) -> st
     """
     Функция принимает файл, год, месяц и возвращает список выгодных категорий повышенного кэшбэка
     """
-    logger_cash.info(f"Run function for {month}.{year}")
+    logger_cash.info(f"Function run for {month}.{year}")
 
     if operations is None:
         logger_cash.error("operations is None")

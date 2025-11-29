@@ -46,15 +46,15 @@ def get_time_greeting() -> str:
     Функция возвращает «Доброе утро» / «Добрый день» / «Добрый вечер» / «Доброй ночи»
     в зависимости от текущего времени
     """
-    logger_greeting.info("Run function")
+    logger_greeting.info("Function run")
 
     try:
         user_time = datetime.now().hour
         if 5 <= user_time < 12:
             return "Доброе утро"
-        elif 12 < user_time <= 18:
+        elif 12 <= user_time < 18:
             return "Добрый день"
-        elif 18 < user_time <= 22:
+        elif 18 <= user_time < 22:
             return "Добрый вечер"
         else:
             return "Доброй ночи"
@@ -67,7 +67,7 @@ def read_exel(path_xlsx: str) -> DataFrame | None:
     """
     Чтение Exel файла
     """
-    logger_excel.info("Run function")
+    logger_excel.info("Function run")
 
     if not os.path.exists(path_xlsx) or os.path.getsize(path_xlsx) == 0:
         logger_excel.error("Path_xlsx does not exist or is empty")
@@ -84,7 +84,7 @@ def get_filter_date_df(operations: Optional[DataFrame], date: str) -> DataFrame 
     Функция принимает файл, входящую дату и возвращает данные с начала месяца,
     на который выпадает входящая дата, по входящую дату
     """
-    logger_filter_date.info("Run function")
+    logger_filter_date.info("Function run")
 
     if operations is None:
         logger_filter_date.error("operations is None")
@@ -102,7 +102,7 @@ def get_cards(df_filter_date: Optional[DataFrame]) -> list[dict] | None:
     Функция принимает отфильтрованную по дате таблицу и возвращает
     информацию по каждой карте: последние 4 цифры карты; общая сумма расходов; кешбэк.
     """
-    logger_cards.info("Run function")
+    logger_cards.info("Function run")
 
     if df_filter_date is None:
         logger_cards.error("Input DataFrame is None")
@@ -152,7 +152,7 @@ def get_top(df_filter_date: Optional[DataFrame], top: int = 5) -> list[dict] | N
     Функция принимает отфильтрованную по дате таблицу
     и возвращает топ-5 транзакций по сумме платежа
     """
-    logger_top.info("Run function")
+    logger_top.info("Function run")
 
     if df_filter_date is None:
         logger_top.error("Input DataFrame is None. Cannot process.")
@@ -189,7 +189,7 @@ def load_json(path_json: str) -> Optional[Dict[str, Any]]:
     """
     Чтение json файла
     """
-    logger_json.info("Run function")
+    logger_json.info("Function run")
 
     if not os.path.exists(path_json) or os.path.getsize(path_json) == 0:
         logger_json.error("Path_json does not exist or is empty")
@@ -205,7 +205,7 @@ def get_currency(user_settings: Optional[Dict[str, Any]]) -> Optional[List[Dict[
     """
     Функция принимает файл настроек и возвращает курс валют
     """
-    logger_currency.info("Run function")
+    logger_currency.info("Function run")
 
     if user_settings is None:
         logger_currency.error("user_settings is None")
@@ -242,7 +242,7 @@ def get_stock(user_settings: Optional[Dict[str, Any]]) -> Optional[List[Dict[str
     """
     Функция принимает файл настроек и возвращает стоимость акций
     """
-    logger_stock.info("Run function")
+    logger_stock.info("Function run")
 
     if user_settings is None:
         logger_currency.error("user_settings is None.")

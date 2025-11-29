@@ -1,5 +1,5 @@
 import json
-
+import logging
 import config
 from src.utils import get_cards
 from src.utils import get_currency
@@ -9,6 +9,8 @@ from src.utils import get_time_greeting
 from src.utils import get_top
 from src.utils import load_json
 from src.utils import read_exel
+
+logger_views = logging.getLogger("views")
 
 
 def str_main(date: str) -> str:
@@ -22,26 +24,30 @@ def str_main(date: str) -> str:
     - Курс валют
     - Стоимость акций из S&P500
     """
-    path_xl = str(config.PATH_TO_OPERATIONS)
-    path_j = str(config.PATH_TO_USER_SETTINGS)
+    logger_views.info(f"Function run for {date}")
+    try:
+        path_xl = str(config.PATH_TO_OPERATIONS)
+        path_j = str(config.PATH_TO_USER_SETTINGS)
 
-    greeting = get_time_greeting()
-    operations = read_exel(path_xl)
-    df_filter_date = get_filter_date_df(operations, date)
-    cards = get_cards(df_filter_date)
-    top_transactions = get_top(df_filter_date)
-    user_settings = load_json(path_j)
-    currency_rates = get_currency(user_settings)
-    stock_prices = get_stock(user_settings)
+        greeting = get_time_greeting()
+        operations = read_exel(path_xl)
+        df_filter_date = get_filter_date_df(operations, date)
+        cards = get_cards(df_filter_date)
+        top_transactions = get_top(df_filter_date)
+        user_settings = load_json(path_j)
+        currency_rates = get_currency(user_settings)
+        stock_prices = get_stock(user_settings)
 
-    result = {
-        "greeting": greeting,
-        "cards": cards,
-        "top_transactions": top_transactions,
-        "currency_rates": currency_rates,
-        "stock_prices": stock_prices,
-    }
+        result = {
+            "greeting": greeting,
+            "cards": cards,
+            "top_transactions": top_transactions,
+            "currency_rates": currency_rates,
+            "stock_prices": stock_prices,
+        }
 
-    result_json = json.dumps(result, ensure_ascii=False, indent=4)
+        result_json = json.dumps(result, ensure_ascii=False, indent=4)
 
-    return result_json
+        return result_json
+    except Exception as e:
+        logger_views.error(f"Error: {e}")
