@@ -8,7 +8,7 @@ from src.views import str_main
 logger_main = logging.getLogger("main")
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """Функция отвечает за основную логику проекта и связывает функциональности между собой"""
     try:
         date = input("Введите дату в формате YYYY-MM-DD HH:MM:SS, чтобы получить данные с начала месяца    ")
@@ -28,5 +28,5 @@ def main() -> None:
         logger_main.error(f"Error: {e}")
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

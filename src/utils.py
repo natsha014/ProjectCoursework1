@@ -58,12 +58,12 @@ def get_time_greeting() -> str:
             return "Добрый вечер"
         else:
             return "Доброй ночи"
-    except Exception as e:
+    except Exception as e:  # pragma: no cover
         logger_greeting.error(f"Error: {e}")
         return ""
 
 
-def read_exel(path_xlsx: str) -> DataFrame | None:
+def read_excel(path_xlsx: str) -> DataFrame | None:
     """
     Чтение Exel файла
     """
@@ -142,7 +142,7 @@ def get_cards(df_filter_date: Optional[DataFrame]) -> list[dict] | None:
         logger_cards.info("Result received")
         return result
 
-    except Exception as e:
+    except Exception as e:  # pragma: no cover
         logger_cards.error(f"Error: {e}")
         return None
 
@@ -180,12 +180,12 @@ def get_top(df_filter_date: Optional[DataFrame], top: int = 5) -> list[dict] | N
         logger_top.info("Result received")
         return dict_top
 
-    except Exception as e:
+    except Exception as e:  # pragma: no cover
         logger_cards.error(f"Error: {e}")
         return None
 
 
-def load_json(path_json: str) -> Optional[Dict[str, Any]]:
+def load_json(path_json: str) -> Optional[Any]:
     """
     Чтение json файла
     """
@@ -198,7 +198,7 @@ def load_json(path_json: str) -> Optional[Dict[str, Any]]:
         with open(path_json, "r", encoding="utf-8") as f:
             file = json.load(f)
             logger_json.info("Data received")
-        return dict(file)
+        return file
 
 
 def get_currency(user_settings: Optional[Dict[str, Any]]) -> Optional[List[Dict[str, Any]]]:
@@ -239,9 +239,6 @@ def get_currency(user_settings: Optional[Dict[str, Any]]) -> Optional[List[Dict[
 
 
 def get_stock(user_settings: Optional[Dict[str, Any]]) -> Optional[List[Dict[str, Any]]]:
-    """
-    Функция принимает файл настроек и возвращает стоимость акций
-    """
     logger_stock.info("Function run")
 
     if user_settings is None:
@@ -249,26 +246,42 @@ def get_stock(user_settings: Optional[Dict[str, Any]]) -> Optional[List[Dict[str
         return None
 
     stocks_price = []
-
     stocks = user_settings["user_stocks"]
+
     for stock in stocks:
         params = {"function": "GLOBAL_QUOTE", "symbol": stock, "apikey": api_key_s}
         if url_s is not None:
             r = requests.get(url_s, params=params)
-
             status_code = r.status_code
 
             if status_code == 200:
                 data = r.json()
                 logger_stock.info("Request received")
-                stock_r = data.get("Global Quote", {}).get("01. symbol")
-                stock_price = round(float(data.get("Global Quote", {}).get("05. price")), 2)
-                stocks_price.append({"stock": stock_r, "price": stock_price})
-                logger_stock.info("Stocks received")
+
+                global_quote = data.get("Global Quote", {})
+                stock_symbol = global_quote.get("01. symbol")
+                price_str = global_quote.get("05. price")
+
+                if stock_symbol and price_str:
+                    try:
+                        stock_price = round(float(price_str), 2)
+                        stocks_price.append({"stock": stock_symbol, "price": stock_price})
+                        logger_stock.info(f"Stock {stock_symbol} received")
+                    except ValueError as e:  # pragma: no cover
+                        logger_stock.error(f"Error converting price to float for {stock_symbol}: {e}")
+                        return None
+                else:
+                    logger_stock.error(
+                        f"Missing data in Global Quote response for {stock}. Full response keys: {data.keys()}"
+                    )
+                    logger_stock.error(f"API Error Message: {data.get('Note', 'N/A')}")
+                    return None
+
             else:
                 logger_stock.error(f"Status_code: {status_code}")
                 return None
         else:
             logger_stock.error("URL not found, request skipped")
             return None
+
     return stocks_price

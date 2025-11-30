@@ -6,14 +6,14 @@ import pandas as pd
 from pandas import DataFrame
 
 import config
-from src.utils import read_exel
+from src.utils import read_excel
 
 pd.options.mode.copy_on_write = True
 
 logger_cash = logging.getLogger("cash")
 
 path_xl = str(config.PATH_TO_OPERATIONS)
-operations = read_exel(path_xl)
+operations = read_excel(path_xl)
 
 
 def get_cash_month(operations: Optional[DataFrame], year: int, month: int) -> str | None:

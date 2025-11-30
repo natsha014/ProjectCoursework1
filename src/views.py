@@ -1,5 +1,6 @@
 import json
 import logging
+
 import config
 from src.utils import get_cards
 from src.utils import get_currency
@@ -8,12 +9,12 @@ from src.utils import get_stock
 from src.utils import get_time_greeting
 from src.utils import get_top
 from src.utils import load_json
-from src.utils import read_exel
+from src.utils import read_excel
 
 logger_views = logging.getLogger("views")
 
 
-def str_main(date: str) -> str:
+def str_main(date: str) -> str | None:
     """
     Функция принимает на вход строку с датой и временем в формате
     YYYY-MM-DD HH:MM:SS и возвращает JSON-ответ со следующими данными:
@@ -30,7 +31,7 @@ def str_main(date: str) -> str:
         path_j = str(config.PATH_TO_USER_SETTINGS)
 
         greeting = get_time_greeting()
-        operations = read_exel(path_xl)
+        operations = read_excel(path_xl)
         df_filter_date = get_filter_date_df(operations, date)
         cards = get_cards(df_filter_date)
         top_transactions = get_top(df_filter_date)
@@ -49,5 +50,6 @@ def str_main(date: str) -> str:
         result_json = json.dumps(result, ensure_ascii=False, indent=4)
 
         return result_json
-    except Exception as e:
+    except Exception as e:  # pragma: no cover
         logger_views.error(f"Error: {e}")
+        return None
