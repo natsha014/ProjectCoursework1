@@ -31,6 +31,7 @@ def log(filename: str) -> Callable:  # pragma: no cover
             except Exception as e:
                 with open(filename, "w", encoding="utf-8") as f:
                     f.write(f"{func.__name__} error: {e}. Inputs: {args}, {kwargs}\n")
+                return None
 
         return inner
 
